@@ -18,7 +18,6 @@
                 <v-card>
                     <v-container grid-list-sm fluid>
                         <v-layout row wrap align-center>
-                            <!-- Order selection - Randpm, Descending, or Ascending -->
                             <v-flex xs6>
                                 <v-select :items="breedNames" v-model="selectedBreed" label="breed" attach>
                                 </v-select>
@@ -27,11 +26,9 @@
                         <v-layout row wrap>
                             <!-- for loop through the results from the API -->
                             <v-flex v-for="n in images" :§="n.id" xs4 d-flex>
-                                <!-- <v-card color="grey lighten-4" flat tile class="d-flex"> -->
                                 <v-img @click="clickImage(n)" :src="n.url" lazy-src="https://picsum.photos/10/6"
                                     class="grey lighten-2" aspect-ratio="1">
                                 </v-img>
-                                <!-- </v-card> -->
                             </v-flex>
                         </v-layout>
                         <br>
@@ -62,32 +59,33 @@
                         </v-img>
 
                         <v-card-text v-if="currentImage.breeds.length > 0">
-                            {{currentImage.breeds[0].name}}
+                           Name: {{currentImage.breeds[0].name}}
                         </v-card-text>
 
                         <v-card-text v-if="currentImage.breeds.length > 0">
-                            {{currentImage.breeds[0].description}}
+                            Description: {{currentImage.breeds[0].description}}
                         </v-card-text>
 
                         <v-card-text v-if="currentImage.breeds.length > 0">
-                            {{currentImage.breeds[0].temperament}}
+                           Temperament: {{currentImage.breeds[0].temperament}}
                         </v-card-text>
 
                         <v-card-text v-if="currentImage.breeds.length > 0">
-                            {{currentImage.breeds[0].life_span}}
+                            Life Span: {{currentImage.breeds[0].life_span}}
                         </v-card-text>
 
                         <v-card-text v-if="currentImage.breeds.length > 0">
-                            {{currentImage.breeds[0].origin}}
+                            Origin: {{currentImage.breeds[0].origin}}
                         </v-card-text>
 
                         <v-card-text v-if="currentImage.breeds.length > 0">
-                            {{currentImage.breeds[0].weight.metric}} kg
+                            Weight: {{currentImage.breeds[0].weight.metric}} kg
                         </v-card-text>
 
                         <v-card-text v-if="currentImage.breeds.length > 0">
-                            {{currentImage.breeds[0].wikipedia_url}}
+                           Wikipedia URL: {{currentImage.breeds[0].wikipedia_url}}
                         </v-card-text>
+
                         <v-divider></v-divider>
 
                         <v-card-text>
@@ -158,7 +156,6 @@
             methods: {
                 clickImage(n) {
                     this.currentImage = n;
-                    console.log(n)
                     this.openDialog = true;
                 },
                 async getBreeds() {
@@ -166,9 +163,6 @@
                         axios.defaults.headers.common['x-api-key'] = "611805ae-72fb-42c5-9844-0b9637bc1e98" // Replace this with your API Key
 
                         let response = await axios.get('https://api.thecatapi.com/v1/breeds')
-                        console.log(response);
-
-                        // this.breedData = response.data
 
                         data = response.data
                         
@@ -179,10 +173,6 @@
                             this.breedNames.push(data[i].name);
                             this.breedToId[data[i].name] = data[i].id;
                         }
-
-
-                        console.log(this.breedIds)
-                        console.log(this.breedNames)
 
                     } catch (err) {
                         console.log(err)
@@ -195,28 +185,21 @@
                 async getImages() {
                     try {
                         axios.defaults.headers.common['x-api-key'] = "611805ae-72fb-42c5-9844-0b9637bc1e98" // Replace this with your API Key
-                        console.log(this.breedNames)
                         for (let i = 0; i < this.breedNames; i++) {
                             if (this.breedNames[i] === this.selectedBreed) {
                                 this.selectedId = this.breedIds[i];
                             }
                         }
-                        console.log(this.selectedId);
                         let query_params = {
                             breed_id: this.breedToId[this.selectedBreed],
                             limit: this.limit,
                             order: this.order,
                             page: this.page - 1,
                         }
-                        console.log(this.breedToId[this.selectedBreed])
                         let response = await axios.get('https://api.thecatapi.com/v1/images/search', { params: query_params })
 
                         this.pagination_count = response.headers['pagination-count'];
                         this.images = response.data
-
-                        console.log("-- (" + this.images.length + ") Images from TheCatAPI.com")
-                        console.log(this.pagination_count, 'images available for this query.')
-
                     } catch (err) {
                         console.log(err)
                     }
